@@ -6,4 +6,4 @@
     packages:
       - git
   roles:
-    - apt
+    - devs
