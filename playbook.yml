@@ -2,9 +2,32 @@
 - hosts: 127.0.0.1
   connection: local
   become: true
-  vars:
-    packages:
-      - git
-      - net-tools
-  roles:
-    - devs
+  
+  tasks:
+    - name: Install VS code
+      block:
+        - name: Add Visual Studio Code repo
+          shell: |
+            rpm --import https://packages.microsoft.com/keys/microsoft.asc
+            sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
+        
+        - name: Update dnf repository
+          dnf:
+            name: "*"
+            state: latest
+
+        - name: Install Visual Studio Code
+          dnf:
+            name: code
+            state: present
+
+    - name: Install git
+      dnf:
+        name: git
+        state: present
+
+    - name: Install Rocky9 Gnome GUI
+      command: dnf groupinstall "Server with GUI" --skip-broken -y
+
+    - name: Default boot to graphical mode
+      command: systemctl set-default graphical
